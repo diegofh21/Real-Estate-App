@@ -4,18 +4,11 @@ import { useNavigate } from 'react-router-dom';
 import Layout from '../components/Layout';
 import AuthUser from '../components/AuthUser';
 
-import belmenyLogo from '../assets/img/logoBG.png';
-import userIcon from '../assets/img/user-icon-resize.png';
+import userIcon from '../assets/img/userIconGreenResized.jpg';
 
-import { FaFacebook, FaTwitter, FaInstagram, FaEnvelope } from 'react-icons/fa';
+import { FaFacebook, FaTwitter, FaInstagram } from 'react-icons/fa';
 
-import 'chart.js/auto';
-import { Chart } from 'react-chartjs-2';
-import { Splide, SplideSlide } from '@splidejs/react-splide';
-
-import { getMetasPorVendedor, getProgresoVert, getProgresoIngco, getProgresoGlobal, getTopVendedoresZona, getInfoCobranza, getVentasAnualesEnCurso } from '../api/request';
-
-import '@splidejs/react-splide/css';
+import { getPersona } from '../api/request';
 
 export const Dashboard = () => {
 
@@ -24,274 +17,30 @@ export const Dashboard = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // if (user.CodVendedor === 'master') {
-      // alert('NO ERES EL USUARIO MAESTRO')
-      // navigate('/register')
-    // }
-    // loadMetasYProgreso()
-    setLoading(false);
+    onLoad();
+    loadDatos()
   }, []);
+
+  const onLoad = async () => {
+    // Loader en false
+    if (loading) {
+      setTimeout(() => {
+        setLoading(false);
+      }, 300);
+    }
+  }
 
   // State del loading
   const [loading, setLoading] = useState(true);
 
-  // States de datos
-  // const [metas, setMetas] = useState([]);
-  // const [progresoVert, setProgresoVert] = useState('');
-  // const [progresoIngco, setProgresoIngco] = useState('');
-  // const [progreso, setProgreso] = useState('');
+  //States de datos
+  const [persona, setPersona] = useState({});
 
-  // const [chartData, setChartData] = useState({});
-  // const [topData, setTopData] = useState({});
-  // const [pieDataActualMonth, setPieDataActualMonth] = useState({});
-  // const [pieDataLastMonth, setPieDataLastMonth] = useState({});
-  // const [ventasAnualActual, setVentasAnualActual] = useState({});
-  // const [options, setOptions] = useState({})
-
-  // const now = new Date();
-
-  // const loadMetasYProgreso = async () => {
-  //   const metasRes = await getMetasPorVendedor(user.CodVendedor);
-  //   setMetas(metasRes.data[0])
-
-    // Mes anterior
-    // // const oneMonthsAgo = new Date(now.getFullYear(), now.getMonth() - 1, 1).toLocaleDateString('default', { month: 'long' })
-    // const firstDayPastMonth = JSON.stringify(new Date(now.getFullYear(), now.getMonth() - 1, 1)).slice(1, 11)
-    // const lastDayPastMonth = JSON.stringify(new Date(now.getFullYear(), now.getMonth(), 0)).slice(1, 11)
-
-    // Mes actual
-    // const firstDay = JSON.stringify(new Date(now.getFullYear(), now.getMonth(), 1)).slice(1, 11);
-    // const lastDay = JSON.stringify(new Date(now.getFullYear(), now.getMonth() + 1, 0)).slice(1, 11);
-
-    // const progresoVertRes = await getProgresoVert(user.CodVendedor, firstDay, lastDay)
-    // const progresoIngcoRes = await getProgresoIngco(user.CodVendedor, firstDay, lastDay)
-
-    // EN CASO DE QUE ESTE SINCRONIZANDO, HAY QUE SETEAR LOS PROGRESOS EN 0
-    // setProgresoIngco(0)
-    // setProgresoVert(0)
-    // var ProgresoGlobal = 0
-
-    // SI YA ESTA SINCRONIZADO ENTONCES SE PUEDEN COLOCAR SUS DATOS REALES
-    // setProgresoVert(progresoVertRes[0].TotalVendido.toFixed(2))
-    // setProgresoIngco(progresoIngcoRes[0].TotalVendido.toFixed(2))
-    // var ProgresoGlobal = parseFloat(progresoVertRes[0].TotalVendido.toFixed(2)) + parseFloat(progresoIngcoRes[0].TotalVendido.toFixed(2))
-    // setProgreso(ProgresoGlobal.toFixed(2))
-
-    // const ventasAnualActualRes = await getVentasAnualesEnCurso(user.CodVendedor)
-
-    // setChartData({
-    //   labels: ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'],
-    //   datasets: [
-    //     {
-    //       fill: true,
-    //       data: [
-    //         ventasAnualActualRes.Enero[0].Enero,
-    //         ventasAnualActualRes.Febrero[0].Febrero,
-    //         ventasAnualActualRes.Marzo[0].Marzo,
-    //         ventasAnualActualRes.Abril[0].Abril,
-    //         ventasAnualActualRes.Mayo[0].Mayo,
-    //         ventasAnualActualRes.Junio[0].Junio,
-    //         ventasAnualActualRes.Julio[0].Julio,
-    //         ventasAnualActualRes.Agosto[0].Agosto,
-    //         ventasAnualActualRes.Septiembre[0].Septiembre,
-    //         ventasAnualActualRes.Octubre[0].Octubre,
-    //         0,
-    //         0
-    //       ],
-    //       label: 'Ventas anuales',
-    //       borderColor: 'rgb(53, 162, 235)',
-    //       backgroundColor: 'rgba(53, 162, 235, 0.5)'
-
-    //     }
-    //   ]
-    // })
-
-    // setOptions({
-    //   indexAxis: 'y',
-    //   elements: {
-    //     bar: {
-    //       borderWidth: 2,
-    //     },
-    //   },
-    //   responsive: true,
-    //   plugins: {
-    //     legend: {
-    //       position: 'right',
-    //     },
-    //     title: {
-    //       display: true,
-    //       text: 'Top Vendedores del mes',
-    //     },
-    //   },
-    // });
-
-    // var arrColoresGraficoTop = []
-
-    // switch (metasRes.data[0].zona) {
-    //   case 'Occidente':
-    //     arrColoresGraficoTop = [
-    //       "#2ecc71",
-    //       "#2ecc71",
-    //       "#2ecc71",
-    //       "#2ecc71",
-    //       "#f39c12",
-    //       "#f39c12",
-    //       "#f39c12",
-    //       "#f39c12",
-    //       "#e74c3c",
-    //       "#e74c3c",
-    //       "#e74c3c",
-    //       "#e74c3c",
-    //       "#e74c3c",
-    //       "#e74c3c",
-    //     ]
-    //     break;
-
-    //   case 'Oriente':
-    //     arrColoresGraficoTop = [
-    //       "#2ecc71",
-    //       "#2ecc71",
-    //       "#2ecc71",
-    //       "#f39c12",
-    //       "#f39c12",
-    //       "#f39c12",
-    //       "#e74c3c",
-    //       "#e74c3c",
-    //       "#e74c3c",
-    //     ]
-    //     break;
-
-    //   case 'Llanos':
-    //     arrColoresGraficoTop = [
-    //       "#2ecc71",
-    //       "#2ecc71",
-    //       "#f39c12",
-    //       "#f39c12",
-    //       "#e74c3c",
-    //       "#e74c3c",
-    //       "#e74c3c",
-    //     ]
-    //     break;
-
-    //   case 'Centro - Occidente':
-    //     arrColoresGraficoTop = [
-    //       "#2ecc71",
-    //       "#2ecc71",
-    //       "#f39c12",
-    //       "#f39c12",
-    //       "#e74c3c",
-    //       "#e74c3c",
-    //     ]
-    //     break;
-
-    //   case 'Centro':
-    //     arrColoresGraficoTop = [
-    //       "#2ecc71",
-    //       "#2ecc71",
-    //       "#2ecc71",
-    //       "#f39c12",
-    //       "#f39c12",
-    //       "#e74c3c",
-    //       "#e74c3c",
-    //       "#e74c3c",
-    //       "#e74c3c",
-    //       "#e74c3c",
-    //       "#e74c3c",
-    //       "#e74c3c",
-    //       "#e74c3c",
-    //       "#e74c3c",
-    //       "#e74c3c",
-    //       "#e74c3c",
-    //       "#e74c3c",
-    //       "#e74c3c",
-    //     ]
-    //     break;
-
-    //   case 'Andina':
-    //     arrColoresGraficoTop = [
-    //       "#2ecc71",
-    //       "#2ecc71",
-    //       "#2ecc71",
-    //       "#f39c12",
-    //       "#f39c12",
-    //       "#f39c12",
-    //       "#f39c12",
-    //       "#e74c3c",
-    //       "#e74c3c",
-    //       "#e74c3c",
-    //       "#e74c3c",
-    //     ]
-    //     break;
-
-    //   case 'Amazonas':
-    //     arrColoresGraficoTop = [
-    //       "#2ecc71",
-    //     ]
-    //     break;
-
-    //   default:
-    //     break;
-    // }
-
-    // const topRes = await getTopVendedoresZona(metasRes.data[0].zona, firstDay, lastDay)
-
-    // setTopData({
-    //   labels: topRes.map((Vendedor) => Vendedor.Nombre),
-    //   datasets: [
-    //     {
-    //       label: [`Vendedores`],
-    //       data: topRes.map((Ventas) => Ventas.total_vendido),
-    //       backgroundColor: arrColoresGraficoTop
-    //     },
-    //   ],
-    // })
-
-    // const cobranzasResLastMonth = await getInfoCobranza(user.CodVendedor, firstDayPastMonth, lastDayPastMonth)
-
-    // setPieDataLastMonth({
-    //   labels: ['Pagado', 'Abonado', 'Pendiente'],
-    //   datasets: [
-    //     {
-    //       label: 'Información sobre pagos, abonos y pendientes',
-    //       data: [cobranzasResLastMonth.Cancelado[0].Cancelado, cobranzasResLastMonth.Abonado[0].Abonado, cobranzasResLastMonth.Pendiente[0].Pendiente],
-    //       borderColor: [
-    //         '#2ecc71',
-    //         '#f1c40f',
-    //         '#e74c3c',
-    //       ],
-    //       backgroundColor: [
-    //         '#2ecc71',
-    //         '#f1c40f',
-    //         '#e74c3c',
-    //       ]
-    //     }
-    //   ]
-    // })
-
-    // const cobranzasResActualMonth = await getInfoCobranza(user.CodVendedor, firstDay, lastDay)
-
-    // setPieDataActualMonth({
-    //   labels: ['Pagado', 'Abonado', 'Pendiente'],
-    //   datasets: [
-    //     {
-    //       label: 'Información sobre pagos, abonos y pendientes',
-    //       data: [cobranzasResActualMonth.Cancelado[0].Cancelado, cobranzasResActualMonth.Abonado[0].Abonado, cobranzasResActualMonth.Pendiente[0].Pendiente],
-    //       borderColor: [
-    //         '#2ecc71',
-    //         '#f1c40f',
-    //         '#e74c3c',
-    //       ],
-    //       backgroundColor: [
-    //         '#2ecc71',
-    //         '#f1c40f',
-    //         '#e74c3c',
-    //       ]
-    //     }
-    //   ]
-    // })
-
-  //   setLoading(false)
-  // }
+  const loadDatos = async () => {
+    const res = await getPersona(user.id);
+    setPersona(res[0])
+    console.log(persona)
+  }
 
   return (
     <>
@@ -321,10 +70,10 @@ export const Dashboard = () => {
                   <div className="container-fluid rounded">
                     <div className="row">
                       <div className="col">
-                        <div className="belmeny-text">
+                        <div className="">
                           <h2 className='fs-1'><strong>Bienvenido</strong></h2>
-                          <h3>Usuario</h3>
-                          <h5><i>Codigo</i></h5>
+                          <h3>{persona.fullname}</h3>
+                          <h5><i>V-{persona.dni}</i></h5>
                         </div>
                       </div>
                       <div className="col">
@@ -337,15 +86,27 @@ export const Dashboard = () => {
                     </div>
                     <div className="row">
 
-                      
+                      <div className="col">
+                        <div className="bg-belmeny w-75 rounded m-auto text-light text-center py-3">
+                          <h5 className="">Inmuebles publicados</h5>
+                          <h6>5</h6>
+                        </div>
+                      </div>
+                      <div className="col">
+                        <div className="bg-belmeny w-75 rounded m-auto text-light text-center py-3">
+                          <h5 className="">Clientes interesados en inmuebles publicados</h5>
+                          <h6>5</h6>
+                        </div>
+                      </div>
 
-                      <div className="col-sm-9">
-                        {/* <div className="m-auto" style={{ width: "102%" }}>
-                          <Chart type='bar' data={topData} className='mb-4 ' options={options} />
-                        </div> */}
+
+                    </div>
+
+                    <div className="row">
+                      <div className="col-sm-12">
                         <div className='mt-5 belmeny-text division' />
                         <div className="text-end">
-                          <a href="https://www.facebook.com/belmeny.vert/" target={'_blank'} className='fb-btn belmeny-text me-3'>
+                          <a href="https://www.facebook.com/diegofh21/" target={'_blank'} className='fb-btn belmeny-text me-3'>
                             <span className='fs-1'><FaFacebook /></span>
                           </a>
                           <a href="https://twitter.com/vert_productos?lang=es" target={'_blank'} className='tw-btn belmeny-text me-3'>

@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\Api\CustomUserController;
 use App\Http\Controllers\API\RegisterController;
+use App\Http\Controllers\Api\PersonaController;
 
 /*
 |--------------------------------------------------------------------------
@@ -20,11 +21,16 @@ use App\Http\Controllers\API\RegisterController;
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
-
-Route::post('login', [CustomUserController::class, 'login']);
-Route::get('getUser', [RegisterController::class,'getUsuario']);
+//Registro e inicio de sesion
 Route::post('register', [CustomUserController::class,'register']);
-Route::post('registrarPersona', [RegisterController::class,'registrarPersona']);
+Route::post('login', [CustomUserController::class, 'login']);
+
+//Para obtener al usuario
+Route::get('getUser', [RegisterController::class,'getUsuario']);
+// Route::post('registrarPersona', [RegisterController::class,'registrarPersona']);
+
+//Para obtener los datos de la persona
+Route::get('getPersona', [PersonaController::class,'getPersona']);
 
 Route::group(['middleware' => 'api',], function () {
     Route::post('logout', [CustomUserController::class, 'logout']);

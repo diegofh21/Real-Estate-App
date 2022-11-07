@@ -55,8 +55,9 @@ export const Register = () => {
     }
   }
 
-  const handleSelect = (e) => {
+  const handleSelectGender = (e) => {
     e.preventDefault();
+    console.log(e.target.value)
     switch (e.target.value) {
       case 'Masculino':
         setGenero('Masculino')
@@ -64,6 +65,18 @@ export const Register = () => {
       case 'Femenino':
         setGenero('Femenino')
         break;
+      case 'NA':
+        setGenero('NA')
+        break;
+      default:
+        setGenero('NA')
+        break;
+    }
+  }
+
+  const handleSelectUser = (e) => {
+    e.preventDefault();
+    switch (e.target.value) {
       case 'Agente':
         setUserType('Agente')
         break;
@@ -71,11 +84,9 @@ export const Register = () => {
         setUserType('Cliente')
         break;
       case 'NA':
-        setGenero('NA')
         setUserType('NA')
         break;
       default:
-        setGenero('NA')
         setUserType('NA')
         break;
     }
@@ -86,8 +97,13 @@ export const Register = () => {
     loader()
     e.preventDefault();
 
-    if (genero && userType === 'NA') {
-      alert('DEBE ESCOGER SU GENERO Y TIPO DE USUARIO')
+    if (genero === 'NA') {
+      alert('DEBE ESCOGER SU GENERO')
+      setLoadLogin(false);
+    }
+    else if (userType === 'NA') {
+      alert('DEBE ESCOGER UN TIPO DE USUARIO')
+      setLoadLogin(false);
     }
     else {
       if (userType === 'Agente') {
@@ -96,9 +112,10 @@ export const Register = () => {
 
           http.get(`/getUser?username=${Usuario}`).then((res) => {
             // Obtiene al usuario y su id
-            
+
             http.post(`/registrarPersona?fullname=${nombre}&dni=${dni}&genero=${genero}&phone=${tlf}&address=${direccion}&id_user=${res.data[0].id}&tipo=${userType}`).then((res) => {
               // Registra a la persona en la tabla correspondiente y lo redirije al login
+              setLoadLogin(false);
               navigate('/login')
             }).catch((error) => {
               console.log(error)
@@ -118,10 +135,13 @@ export const Register = () => {
       }
       else if (userType === 'Cliente') {
         http.post('/register', { username: Usuario, password: password, email: correo }).then((res) => {
+          // Registra al usuario
           http.get(`/getUser?username=${Usuario}`).then((res) => {
-            console.log("respuesta=", res.data[0].id)
+            // Obtiene al usuario y su id
             http.post(`/registrarPersona?fullname=${nombre}&dni=${dni}&genero=${genero}&phone=${tlf}&address=${direccion}&id_user=${res.data[0].id}&tipo=${userType}`).then((res) => {
-              console.log(res)
+              // Registra a la persona en la tabla correspondiente y lo redirije al login
+              setLoadLogin(false);
+              navigate('/login')
             }).catch((error) => {
               console.log(error)
               setLoadLogin(false);
@@ -273,7 +293,7 @@ export const Register = () => {
                       <div className="col">
                         <div className="mb-3">
                           <label htmlFor="genero">Género</label>
-                          <select name="genero" className='form-select' onChange={handleSelect}>
+                          <select name="genero" className='form-select' onChange={handleSelectGender}>
                             <option value="NA">-----------</option>
                             <option value="Masculino">Masculino</option>
                             <option value="Femenino">Femenino</option>
@@ -292,7 +312,7 @@ export const Register = () => {
                       <div className="col">
                         <div className="mb-3">
                           <label htmlFor="tipo">Tipo de usuario</label>
-                          <select name="tipo" className='form-select' onChange={handleSelect}>
+                          <select name="tipo" className='form-select' onChange={handleSelectUser}>
                             <option value="NA">-----------</option>
                             <option value="Agente">Agente</option>
                             <option value="Cliente">Cliente</option>

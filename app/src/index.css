@@ -227,7 +227,7 @@ body {
 }
 
 .belmeny-text {
-  color: rgba(0, 41, 117, 1) !important;
+  color: #008035 !important;
 }
 
 /* // Small devices (landscape phones, 576px and up) */
@@ -330,35 +330,35 @@ body {
 
 .fb-btn {
   cursor: pointer;
-  color: rgba(0, 41, 117, 1);
+  color: #008035;
   transition: 300ms;
 }
 
 .fb-btn:hover {
   transition: 300ms;
-  color: #1778F2
+  color: #1778F2 !important;
 }
 
 .tw-btn {
   cursor: pointer;
-  color: rgba(0, 41, 117, 1);
+  color: #008035;
   transition: 300ms;
 }
 
 .tw-btn:hover {
   transition: 300ms;
-  color: #1DA1F2
+  color: #1DA1F2 !important;
 }
 
 .ig-btn {
   cursor: pointer;
-  color: rgba(0, 41, 117, 1);
+  color: #008035;
   transition: 300ms;
 }
 
 .ig-btn:hover {
   transition: 300ms;
-  color: #833AB4
+  color: #833AB4 !important;
 }
 
 .vertical-center {
@@ -504,7 +504,7 @@ td {
 .dashboard-title h4::after {
   content: "";
   position: absolute;
-  border-bottom: solid 4px rgba(0, 41, 117, 1);
+  border-bottom: solid 4px #008035;
   border-radius: 360px;
   top: 50%;
   width: 530px;
@@ -554,7 +554,7 @@ td {
 }
 
 .division {
-  border: 2px solid rgba(0, 41, 117, 1);
+  border: 2px solid #008035;
   border-radius: 360px;
 }
 

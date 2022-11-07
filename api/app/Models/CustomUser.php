@@ -23,6 +23,7 @@ class CustomUser extends Authenticatable implements JWTSubject
         'dni',
         'password',
         'email',
+        'tipo'
     ];
 
     /**

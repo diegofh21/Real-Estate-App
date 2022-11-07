@@ -16,17 +16,11 @@ import { Inmuebles } from './views/Inmuebles'
 import { Login } from './views/Login'
 import { Register } from './views/Register';
 import { Dashboard } from './views/Dashboard';
-import { DashboardSupervisor } from './views/Supervisor/DashboardSupervisor';
-import { ConsultaPedido } from './views/Pedidos/ConsultaPedido';
-import { ConsultaFactura } from './views/Facturas/ConsultaFactura';
-import { ConsultaCliente } from './views/Clientes/ConsultaCliente';
-import { PedidoPDF } from './views/PDF/PedidoPDF';
 import { PageNotFound } from './views/404/PageNotFound';
-import { Info } from './views/Info';
+import { AboutUs } from './views/AboutUs';
 import { EditUser } from './views/EditUser';
 import { Formulario } from './views/Formulario';
-
-
+import { PublicarInmueble } from './views/Inmuebles/PublicarInmueble';
 
 // Estilos
 import './index.css';
@@ -74,13 +68,10 @@ function App() {
               <Route path="/register" element={<Register />}></Route>
 
               {/* Página para visualizar Quienes somos */}
-              <Route path="/info" element={<Info />}></Route>
+              <Route path="/about-us" element={<AboutUs />}></Route>
 
-               {/* Página para editar Datos del usuario y Agente*/}
-               <Route path="/edituser" element={<EditUser />}></Route>
-
-              {/* Página para publicar Inmueble */}
-              <Route path="/formulario" element={<Formulario />}></Route>
+              {/* Página para editar Datos del usuario y Agente*/}
+              <Route path="/edituser" element={<EditUser />}></Route>
 
               {/* En caso de no encontrar ningúna ruta de las especificadas*/}
               <Route path="/*" element={
@@ -91,20 +82,23 @@ function App() {
               {/* Página de inicio */}
               <Route path="/" element={<LandingPage />} />
 
-              {/* Página de panel de supervisor */}
-              <Route path="/panel-administrativo" element={<DashboardSupervisor />}></Route>
+              {/* Página para ver todos los inmuebles publicados */}
+              <Route path="/ver-inmuebles" element={<Inmuebles />} />
+
+              {/* Página para visualizar Quienes somos */}
+              <Route path="/about-us" element={<AboutUs />}></Route>
 
               {/* Página de panel de vendedor */}
               <Route path="/dashboard" element={<Dashboard />}></Route>
-              {/* Rutas de módulos del panel de vendedor */}
-              <Route path="/consulta-pedidos" element={<ConsultaPedido />}></Route>
-              <Route path="/consulta-facturas" element={<ConsultaFactura />}></Route>
-              <Route path="/consulta-clientes" element={<ConsultaCliente />}></Route>
 
+              {/* Página para publicar Inmueble */}
+              <Route path="/inmuebles" element={<Inmuebles />}></Route>
 
+              {/* Página para publicar Inmueble */}
+              <Route path="/publicar-inmueble" element={<PublicarInmueble />}></Route>
 
-              {/* PDF */}
-              <Route path="/generar-pdf" element={<PedidoPDF />}></Route>
+              {/* Página para editar Datos del usuario y Agente*/}
+              <Route path="/edituser" element={<EditUser />}></Route>
 
               {/* En caso de no encontrar ningúna ruta de las especificadas*/}
               <Route path="/*" element={

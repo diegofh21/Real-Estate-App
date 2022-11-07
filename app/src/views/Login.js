@@ -41,8 +41,8 @@ export const Login = () => {
   const handleSubmit = (e) => {
     loader()
     e.preventDefault();
-    http.post('/login', { Usuario: Usuario, password: password }).then((res) => {
-      res.data.user.Usuario = Usuario
+    http.post('/login', { username: Usuario, password: password }).then((res) => {
+      res.data.user.username = Usuario
       setToken(res.data.user, res.data.access_token);
     }).catch((error) => {
       console.log(error)
@@ -114,7 +114,7 @@ export const Login = () => {
                 </p>
               </Alert>
 
-              <Container className='login-form bg-light'>
+              <Container className='login-form bg-light h-50'>
                 <div>
                   <h2 className='text-center fw-semibold  fs-3 mt-3 mb-4'>
                     <img width={80} src={realEstateLogo} alt="Logo Belmeny Group" className='text-center mt-3 drop-shadow' />

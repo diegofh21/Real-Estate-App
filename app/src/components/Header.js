@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Nav, Navbar, Container } from 'react-bootstrap';
 import { Link, useNavigate } from 'react-router-dom'
 import { AuthUser } from './AuthUser';
@@ -12,6 +12,7 @@ export const Header = () => {
   const { getToken } = AuthUser();
 
   const { token, logout } = AuthUser();
+
   const logoutUser = () => {
     if (token != undefined) {
       logout();
@@ -19,15 +20,16 @@ export const Header = () => {
     }
   }
 
-  var authButton, dashboardButton;
+  var authButton, dashboardButton, registerButton;
 
-  // if (!getToken()) {
-  //   dashboardButton = <Link to="/" className='text-decoration-none btn btn-hover text-light border-0'>Inicio</Link>
-  //   authButton = <Link to="/login" className='text-decoration-none btn btn-hover text-light border-0'>Iniciar sesión</Link>
-  // } else {
-  //   dashboardButton = <Link to="/dashboard" className='text-decoration-none btn btn-hover text-light border-0'>Ir al panel de trabajo</Link>
-  //   authButton = <Link onClick={logoutUser} to="/" className='text-decoration-none btn btn-hover text-light border-0'>Cerrar sesión</Link>
-  // }
+  if (!getToken()) {
+    dashboardButton = <Link to="/" className='text-light fw-bold text-decoration-none btn btn-hover'>Inicio</Link>
+    authButton = <Link to="/login" className='text-light fw-bold text-decoration-none btn btn-hover'>Iniciar sesión</Link>
+    registerButton = <Link to="/register" className='text-light fw-bold text-decoration-none btn btn-hover'>Registrarse</Link>
+  } else {
+    dashboardButton = <Link to="/dashboard" className='text-light fw-bold text-decoration-none btn btn-hover'>Panel de Control</Link>
+    authButton = <Link onClick={logoutUser} to="/" className='text-light fw-bold text-decoration-none btn btn-hover'>Cerrar sesión</Link>
+  }
 
   return (
     <>
@@ -47,26 +49,23 @@ export const Header = () => {
           </Nav>
           <Nav className="ms-auto mb-5">
             <Nav.Link>
-              <Link className='text-light fw-bold text-decoration-none btn btn-hover' to='/'>Inicio</Link>
+              {/* <Link className='text-light fw-bold text-decoration-none btn btn-hover' to='/'>Inicio</Link> */}
+              {dashboardButton}
             </Nav.Link>
             <Nav.Link>
-              <Link className='text-light fw-bold text-decoration-none btn btn-hover'to='/info'>¿Quienes somos?</Link>
+              <Link className='text-light fw-bold text-decoration-none btn btn-hover' to='/about-us'>¿Quienes somos?</Link>
             </Nav.Link>
             <Nav.Link>
               <Link className='text-light fw-bold text-decoration-none btn btn-hover' to='/ver-inmuebles'>Ver inmuebles publicados</Link>
             </Nav.Link>
             <Nav.Link>
-              <Link className='text-light fw-bold text-decoration-none btn btn-hover' to='/login'>Iniciar sesión</Link>
+              {/* <Link className='text-light fw-bold text-decoration-none btn btn-hover' to='/login'>Iniciar sesión</Link> */}
+              {authButton}
             </Nav.Link>
             <Nav.Link>
-              <Link className='text-light fw-bold text-decoration-none btn btn-hover' to='/register'>Registrarse</Link>
+              {/* <Link className='text-light fw-bold text-decoration-none btn btn-hover' to='/register'>Registrarse</Link> */}
+              {registerButton}
             </Nav.Link>
-            {/* <Nav.Link>
-              <Link className='text-light fw-bold text-decoration-none btn btn-hover' to='/formulario'>Publicar Inmueble</Link>
-            </Nav.Link> */}
-            {/* <Nav.Link>
-              <Link className='text-light fw-bold text-decoration-none btn btn-hover'to='/edituser'>Editar Datos</Link>
-            </Nav.Link> */}
           </Nav>
         </Container>
       </Navbar>

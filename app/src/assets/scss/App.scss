@@ -1,12 +1,13 @@
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@100;300;400;500;600;700;800;900&display=swap');
 
-$sidebar-bg-color: linear-gradient(180deg, rgba(37, 50, 109, 1) 0%, rgba(0, 41, 117, 1) 50%, rgba(0, 41, 117, 1) 50%);
+// $sidebar-bg-color: linear-gradient(180deg, rgba(37, 50, 109, 1) 0%, rgba(0, 41, 117, 1) 50%, rgba(0, 41, 117, 1) 50%);
+$sidebar-bg-color: #008035;
 $submenu-bg-color: rgba(255, 255, 255, 0.05);
 $submenu-bg-color-collapsed: linear-gradient(180deg, rgba(37, 50, 109, 1) 0%, rgba(0, 41, 117, 1) 50%, rgba(0, 41, 117, 1) 50%);
 $sidebar-color: #ffffff;
 $sidebar-width: 230px;
 $highlight-color: #f0f0f0;
-$icon-bg-color: rgb(0,65,255);
+$icon-bg-color: #00b44b;
 $icon-size: 35px;
 
 @import '~react-pro-sidebar/dist/scss/styles.scss';
@@ -196,5 +197,5 @@ body {
 
 .pro-sidebar .pro-menu .pro-menu-item:hover {
   transition: 300ms;
-  background-color: rgb(0, 51, 146);
+  background-color: rgb(0, 155, 26);
 }
