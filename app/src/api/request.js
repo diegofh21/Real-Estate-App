@@ -3,8 +3,7 @@ import axios from "axios";
 let baseURL = `http://127.0.0.1:8000/api`;
 
 // Real Estate Requests
-export async function getUsuario(username)
-{
+export async function getUsuario(username) {
   try {
     const res = await axios.get(baseURL + `/getUser?username=${username}`);
     return res.data;
@@ -16,6 +15,15 @@ export async function getUsuario(username)
 export async function getPersona(id_user) {
   try {
     const res = await axios.get(baseURL + `/getPersona?id_user=${id_user}`);
+    return res.data;
+  } catch (error) {
+    console.log(error)
+  }
+}
+
+export async function postInmueble(titulo, ubicacion, descripcion, precio, tipo, bathroom, habitaciones, estacionamientos, estado, photo, id_agente) {
+  try {
+    const res = await axios.post(baseURL + `/postInmueble?titulo=${titulo}&ubicacion=${ubicacion}&descripcion=${descripcion}&precio=${precio}&tipo=${tipo}&bathroom=${bathroom}&habitaciones=${habitaciones}&estacionamientos=${estacionamientos}&estado=${estado}&id_agente=${id_agente}&photo=${photo}`);
     return res.data;
   } catch (error) {
     console.log(error)

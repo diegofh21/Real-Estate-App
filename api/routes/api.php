@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\AgenteController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -26,11 +27,14 @@ Route::post('register', [CustomUserController::class,'register']);
 Route::post('login', [CustomUserController::class, 'login']);
 
 //Para obtener al usuario
-Route::get('getUser', [RegisterController::class,'getUsuario']);
+Route::get('getUser', [RegisterController::class, 'getUsuario']);
 // Route::post('registrarPersona', [RegisterController::class,'registrarPersona']);
 
 //Para obtener los datos de la persona
-Route::get('getPersona', [PersonaController::class,'getPersona']);
+Route::get('getPersona', [PersonaController::class, 'getPersona']);
+
+// Para poder publicar los inmuebles
+Route::post('postInmueble', [AgenteController::class, 'PublicarInmueble']);
 
 Route::group(['middleware' => 'api',], function () {
     Route::post('logout', [CustomUserController::class, 'logout']);

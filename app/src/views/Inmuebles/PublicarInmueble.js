@@ -6,7 +6,7 @@ import Layout from '../../components/Layout';
 import AuthUser from '../../components/AuthUser';
 
 // HTTP
-import { getPersona } from '../../api/request';
+import { getPersona, postInmueble } from '../../api/request';
 
 import userIcon from '../../assets/img/userIconGreenResized.jpg';
 
@@ -58,15 +58,59 @@ export const PublicarInmueble = () => {
     }
   }
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     console.log(foto)
-
+    const res = await postInmueble(titulo, ubicacion, descripcion, precio, tipoInmueble, bathrooms, habitaciones, estacionamiento, tipoInversion, foto, persona.id_agente)
+    console.log(res)
   }
 
   const handleSelect = (e) => {
+    e.preventDefault();
+    switch (e.target.value) {
+      case 'Venta':
+        setTipoInversion('Venta')
+        break;
 
+      case 'Alquiler':
+        setTipoInversion('Alquiler')
+        break;
+
+      default:
+        setTipoInversion('NA')
+        break;
+    }
   }
+
+  const handleTypeSelect = (e) => {
+    e.preventDefault();
+
+    switch (e.target.value) {
+      case 'Casa':
+        setTipoInmueble('Casa')
+        break;
+      case 'Apartamento':
+        setTipoInmueble('Apartamento')
+        break;
+      case 'Habitacion':
+        setTipoInmueble('Habitacion')
+        break;
+      case 'Terrenos':
+        setTipoInmueble('Terrenos')
+        break;
+      case 'Locales':
+        setTipoInmueble('Locales')
+        break;
+      case 'Otro':
+        setTipoInmueble('Otro')
+        break;
+
+      default:
+        setTipoInversion('NA')
+        break;
+    }
+  }
+
 
   return (
     <>
@@ -88,7 +132,7 @@ export const PublicarInmueble = () => {
 
                 {/* Div para movil */}
                 <div className="text-center d-sm-none">
-                  {/* <img width={80} src={belmenyLogo} alt="Logo Belmeny Group" className='text-center mt-3 drop-shadow' /> */}
+                  
                 </div>
 
                 {/* Div para web */}
@@ -154,7 +198,7 @@ export const PublicarInmueble = () => {
                             </div>
                             <div className="mb-3">
                               <label htmlFor="tipo">Tipo de Inmueble</label>
-                              <select name="tipo" className='form-select'>
+                              <select name="tipo" className='form-select' onChange={handleTypeSelect}>
                                 <option value="NA">-----</option>
                                 <option value="Casa">Casa</option>
                                 <option value="Apartamento">Apartamento</option>
@@ -221,8 +265,7 @@ export const PublicarInmueble = () => {
                                 name="photo"
                                 id="photo"
                                 className="form-control"
-                                value={foto}
-                                onChange={(e) => setFoto(e.target.value)} />
+                                onChange={(e) => setFoto(e.target.files[0])} />
                             </div>
                           </div>
                           <button className='btn rounded-pill bg-belmeny btn-hover text-light w-100 mt-3' type='submit'>Publicar <FontAwesomeIcon icon={faArrowAltCircleRight} /></button>

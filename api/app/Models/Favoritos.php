@@ -12,10 +12,15 @@ class Favoritos extends Model
     protected $table = 'favoritos';
 
     protected $fillable = [
-        'fullname',
-        'dni',
-        'genero',
-        'phone',
-        'address'
+        'id_propiedad',
+        'id_cliente'
     ];
+
+    public function propiedad() {
+        return $this->hasMany(Propiedades::class);
+    }
+
+    public function cliente() {
+        return $this->belongsTo(Cliente::class);
+    }
 }

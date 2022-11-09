@@ -65,7 +65,11 @@ class CustomUser extends Authenticatable implements JWTSubject
         return [];
     }
 
-    public function bank_accouunt() {
-        return $this->hasOne(BankAccount::class);
+    public function clientes() {
+        return $this->hasMany(Cliente::class);
+    }
+
+    public function agente() {
+        return $this->hasMany(Agente::class);
     }
 }
