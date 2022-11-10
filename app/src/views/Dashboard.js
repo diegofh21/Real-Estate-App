@@ -39,7 +39,6 @@ export const Dashboard = () => {
   const loadDatos = async () => {
     const res = await getPersona(user.id);
     setPersona(res[0])
-    console.log(persona)
   }
 
   return (

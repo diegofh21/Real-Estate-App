@@ -28,13 +28,14 @@ Route::post('login', [CustomUserController::class, 'login']);
 
 //Para obtener al usuario
 Route::get('getUser', [RegisterController::class, 'getUsuario']);
-// Route::post('registrarPersona', [RegisterController::class,'registrarPersona']);
+Route::post('registrarPersona', [RegisterController::class,'registrarPersona']);
 
 //Para obtener los datos de la persona
 Route::get('getPersona', [PersonaController::class, 'getPersona']);
 
 // Para poder publicar los inmuebles
 Route::post('postInmueble', [AgenteController::class, 'PublicarInmueble']);
+Route::post('postImg', [AgenteController::class, 'postImg']); //Publicar imagen del inmueble
 
 Route::group(['middleware' => 'api',], function () {
     Route::post('logout', [CustomUserController::class, 'logout']);

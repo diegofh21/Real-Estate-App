@@ -60,9 +60,23 @@ export const PublicarInmueble = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log(foto)
-    const res = await postInmueble(titulo, ubicacion, descripcion, precio, tipoInmueble, bathrooms, habitaciones, estacionamiento, tipoInversion, foto, persona.id_agente)
-    console.log(res)
+    const getAgente = await getPersona(user.id);
+    const id_agente = getAgente[0].id_agente
+
+    const fData = new FormData();
+    fData.append('image', foto);
+
+    http.post('/postImg', fData).then(async (res) => {
+
+      const updateInmueble = await postInmueble(titulo, ubicacion, descripcion, precio, tipoInmueble, bathrooms, habitaciones, estacionamiento, tipoInversion, id_agente)
+      if(updateInmueble.status === 200) {
+        alert(updateInmueble.message)
+        navigate('/dashboard')
+      }
+
+    }).catch((error) => {
+      console.log(error)
+    })
   }
 
   const handleSelect = (e) => {
@@ -80,6 +94,10 @@ export const PublicarInmueble = () => {
         setTipoInversion('NA')
         break;
     }
+  }
+
+  const handleFileChange = (file) => {
+    setFoto(file[0])
   }
 
   const handleTypeSelect = (e) => {
@@ -132,7 +150,7 @@ export const PublicarInmueble = () => {
 
                 {/* Div para movil */}
                 <div className="text-center d-sm-none">
-                  
+
                 </div>
 
                 {/* Div para web */}
@@ -260,12 +278,12 @@ export const PublicarInmueble = () => {
                               </div>
                             </div>
                             <div className="mb-3">
-                              <label htmlFor="photo">Foto del Inmueble</label>
+                              <label htmlFor="image">Foto del Inmueble</label>
                               <input type="file"
-                                name="photo"
-                                id="photo"
+                                name="image"
+                                id="image"
                                 className="form-control"
-                                onChange={(e) => setFoto(e.target.files[0])} />
+                                onChange={e => handleFileChange(e.target.files)} />
                             </div>
                           </div>
                           <button className='btn rounded-pill bg-belmeny btn-hover text-light w-100 mt-3' type='submit'>Publicar <FontAwesomeIcon icon={faArrowAltCircleRight} /></button>

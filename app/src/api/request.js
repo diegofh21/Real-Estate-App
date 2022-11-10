@@ -21,9 +21,9 @@ export async function getPersona(id_user) {
   }
 }
 
-export async function postInmueble(titulo, ubicacion, descripcion, precio, tipo, bathroom, habitaciones, estacionamientos, estado, photo, id_agente) {
+export async function postInmueble(titulo, ubicacion, descripcion, precio, tipo, bathroom, habitaciones, estacionamientos, estado, id_agente) {
   try {
-    const res = await axios.post(baseURL + `/postInmueble?titulo=${titulo}&ubicacion=${ubicacion}&descripcion=${descripcion}&precio=${precio}&tipo=${tipo}&bathroom=${bathroom}&habitaciones=${habitaciones}&estacionamientos=${estacionamientos}&estado=${estado}&id_agente=${id_agente}&photo=${photo}`);
+    const res = await axios.post(baseURL + `/postInmueble?titulo=${titulo}&ubicacion=${ubicacion}&descripcion=${descripcion}&precio=${precio}&tipo=${tipo}&bathroom=${bathroom}&habitaciones=${habitaciones}&estacionamientos=${estacionamientos}&estado=${estado}&id_agente=${id_agente}`);
     return res.data;
   } catch (error) {
     console.log(error)

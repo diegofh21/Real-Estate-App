@@ -107,7 +107,7 @@ export const Register = () => {
     }
     else {
       if (userType === 'Agente') {
-        http.post('/register', { username: Usuario, password: password, email: correo }).then((res) => {
+        http.post('/register', { username: Usuario, password: password, email: correo, tipo: 'agente' }).then((res) => {
           // Registra al usuario
 
           http.get(`/getUser?username=${Usuario}`).then((res) => {
@@ -134,7 +134,7 @@ export const Register = () => {
         })
       }
       else if (userType === 'Cliente') {
-        http.post('/register', { username: Usuario, password: password, email: correo }).then((res) => {
+        http.post('/register', { username: Usuario, password: password, email: correo, tipo: 'cliente' }).then((res) => {
           // Registra al usuario
           http.get(`/getUser?username=${Usuario}`).then((res) => {
             // Obtiene al usuario y su id
