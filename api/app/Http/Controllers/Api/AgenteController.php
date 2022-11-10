@@ -43,18 +43,8 @@ class AgenteController extends BaseController
         }
     }
 
-    // public function updateDirectorio(Request $request)
-    // {
-    //     $updated = Directorio::where('id_beneficiario', $request->id_beneficiario)
-    //         ->update(['beneficiario' => $request->beneficiario, 'correo_beneficiario' => $request->correo_beneficiario,]);
-
-    //     return response('Beneficiario actualizado exitosamente');
-    // }
-
     public function PublicarInmueble(Request $request)
     {
-
-
         $validator = Validator::make($request->all(), [
             // Required for posting properties
             'titulo' => 'required',
@@ -107,5 +97,14 @@ class AgenteController extends BaseController
             // $inmueble->save();
 
         }
+    }
+
+    public function getInmueblesPublicados(Request $request) {
+        $countInmuebles = DB::table('propiedad')
+        ->select(DB::raw('count(id_propiedad) as InmueblesPublicados'))
+        ->where('id_agente', '=', $request->id_agente)
+        ->get();
+
+        return response()->json($countInmuebles);
     }
 }

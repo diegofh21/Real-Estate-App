@@ -21,6 +21,15 @@ export async function getPersona(id_user) {
   }
 }
 
+export async function getInmueblesPublicados(id_agente) {
+  try {
+    const res = await axios.get(baseURL + `/getInmueblesPublicados?id_agente=${id_agente}`);
+    return res.data;
+  } catch (error) {
+    console.log(error)
+  }
+}
+
 export async function postInmueble(titulo, ubicacion, descripcion, precio, tipo, bathroom, habitaciones, estacionamientos, estado, id_agente) {
   try {
     const res = await axios.post(baseURL + `/postInmueble?titulo=${titulo}&ubicacion=${ubicacion}&descripcion=${descripcion}&precio=${precio}&tipo=${tipo}&bathroom=${bathroom}&habitaciones=${habitaciones}&estacionamientos=${estacionamientos}&estado=${estado}&id_agente=${id_agente}`);

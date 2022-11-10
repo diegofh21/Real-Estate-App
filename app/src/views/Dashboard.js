@@ -8,7 +8,7 @@ import userIcon from '../assets/img/userIconGreenResized.jpg';
 
 import { FaFacebook, FaTwitter, FaInstagram } from 'react-icons/fa';
 
-import { getPersona } from '../api/request';
+import { getPersona, getInmueblesPublicados } from '../api/request';
 
 export const Dashboard = () => {
 
@@ -35,10 +35,18 @@ export const Dashboard = () => {
 
   //States de datos
   const [persona, setPersona] = useState({});
+  const [conteoInmuebles, setConteoInmuebles] = useState('');
 
   const loadDatos = async () => {
     const res = await getPersona(user.id);
     setPersona(res[0])
+    const inmueblesPosteados = await getInmueblesPublicados(res[0].id_agente)
+    if (inmueblesPosteados.length === 0) {
+      setConteoInmuebles(0);
+    }
+    else {
+      setConteoInmuebles(inmueblesPosteados[0].InmueblesPublicados);
+    }
   }
 
   return (
@@ -84,11 +92,10 @@ export const Dashboard = () => {
                       <h4 className='bg-belmeny text-light px-5 rounded-pill'>Inicio</h4>
                     </div>
                     <div className="row">
-
                       <div className="col">
                         <div className="bg-belmeny w-75 rounded m-auto text-light text-center py-3">
                           <h5 className="">Inmuebles publicados</h5>
-                          <h6>5</h6>
+                          <h6>{conteoInmuebles}</h6>
                         </div>
                       </div>
                       <div className="col">
@@ -97,8 +104,10 @@ export const Dashboard = () => {
                           <h6>5</h6>
                         </div>
                       </div>
+                    </div>
 
-
+                    <div className="row my-5">
+                      tabla donde se veran todos los inmuebles publicados
                     </div>
 
                     <div className="row">

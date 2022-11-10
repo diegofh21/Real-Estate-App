@@ -33,6 +33,9 @@ Route::post('registrarPersona', [RegisterController::class,'registrarPersona']);
 //Para obtener los datos de la persona
 Route::get('getPersona', [PersonaController::class, 'getPersona']);
 
+//Obtener los inmuebles publicados para el dashboard del agente
+Route::get('getInmueblesPublicados', [AgenteController::class, 'getInmueblesPublicados']);
+
 // Para poder publicar los inmuebles
 Route::post('postInmueble', [AgenteController::class, 'PublicarInmueble']);
 Route::post('postImg', [AgenteController::class, 'postImg']); //Publicar imagen del inmueble
