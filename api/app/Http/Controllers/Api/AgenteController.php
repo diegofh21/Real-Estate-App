@@ -17,7 +17,7 @@ class AgenteController extends BaseController
 
             $file = $request->file('image');
             $filename = $file->getClientOriginalName();
-            $finalName = date('His') . $filename;
+            $finalName = date('His') . '_' . $filename;
 
             $request->file('image')->storeAs('images/', $finalName, 'public');
 
@@ -33,7 +33,7 @@ class AgenteController extends BaseController
             $inmueble->estacionamientos = null;
             $inmueble->estado = null;
             $inmueble->id_agente = null;
-            $inmueble->photo = 'http://localhost:8000/storage/images/' . '_' . $finalName;
+            $inmueble->photo = 'http://localhost:8000/storage/images/' . $finalName;
 
             $inmueble->save();
 
@@ -99,12 +99,61 @@ class AgenteController extends BaseController
         }
     }
 
-    public function getInmueblesPublicados(Request $request) {
-        $countInmuebles = DB::table('propiedad')
-        ->select(DB::raw('count(id_propiedad) as InmueblesPublicados'))
-        ->where('id_agente', '=', $request->id_agente)
-        ->get();
+    public function getInmueblesPublicados(Request $request)
+    {
+        $inmuebles = Propiedades::where('id_agente', $request->id_agente)
+            ->get();
 
-        return response()->json($countInmuebles);
+        $countInmuebles = DB::table('propiedad')
+            ->select(DB::raw('count(id_propiedad) as InmueblesPublicados'))
+            ->where('id_agente', '=', $request->id_agente)
+            ->get();
+
+        return response()->json([
+            'inmuebles' => $inmuebles,
+            'countInmueble' => $countInmuebles,
+        ]);
+    }
+
+    public function updateInmueble(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            // Required for posting properties
+            'titulo' => 'required',
+            'ubicacion' => 'required',
+            'descripcion' => 'required',
+            'precio' => 'required',
+            'tipo' => 'required',
+            'bathroom' => 'required',
+            'habitaciones' => 'required',
+            'estacionamientos' => 'required',
+            'estado' => 'required'
+        ]);
+
+        if ($validator->fails()) {
+            return $this->sendError('Validation Error.', $validator->errors());
+        } else {
+
+            $updated = Propiedades::where('id_propiedad', $request->id_propiedad)
+                ->update([
+                    'titulo' => $request->titulo,
+                    'ubicacion' => $request->ubicacion,
+                    'descripcion' => $request->descripcion,
+                    'precio' => $request->precio,
+                    'tipo' => $request->tipo,
+                    'bathroom' => $request->bathroom,
+                    'habitaciones' => $request->habitaciones,
+                    'estacionamientos' => $request->estacionamientos,
+                    'estado' => $request->estado
+                ]);
+
+            return response()->json(["status" => 200, "message" => "Propiedad actualizada exitosamente"]);
+        }
+    }
+
+    public function deleteInmueble(Request $request) {
+        $deleted = Propiedades::where('id_propiedad', $request->id_propiedad)->delete();
+
+        return response()->json(["status" => 200, "message" => "Propiedad eliminada exitosamente"]);
     }
 }

@@ -170,7 +170,7 @@ export const PublicarInmueble = () => {
                     </div>
 
                     <div className="dashboard-title mt-2 mb-3">
-                      <h4 className='bg-belmeny text-light px-5 rounded-pill'>Inicio</h4>
+                      <h4 className='bg-belmeny text-light px-5 rounded-pill'>Publicar nuevo inmueble</h4>
                     </div>
 
                     <div className='w-50 m-auto'>

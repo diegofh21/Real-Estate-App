@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 
 import Layout from '../components/Layout';
 import AuthUser from '../components/AuthUser';
+import { ConsultaInmueble } from './Inmuebles/ConsultaInmueble';
 
 import userIcon from '../assets/img/userIconGreenResized.jpg';
 
@@ -36,17 +37,22 @@ export const Dashboard = () => {
   //States de datos
   const [persona, setPersona] = useState({});
   const [conteoInmuebles, setConteoInmuebles] = useState('');
+  const [inmueble, setInmueble] = useState([]);
 
   const loadDatos = async () => {
     const res = await getPersona(user.id);
     setPersona(res[0])
     const inmueblesPosteados = await getInmueblesPublicados(res[0].id_agente)
-    if (inmueblesPosteados.length === 0) {
+    // console.log(inmueblesPosteados)
+
+    //Obtener el numero de inmuebles publicados
+    if (inmueblesPosteados.countInmueble.length === 0) {
       setConteoInmuebles(0);
     }
     else {
-      setConteoInmuebles(inmueblesPosteados[0].InmueblesPublicados);
+      setConteoInmuebles(inmueblesPosteados.countInmueble[0].InmueblesPublicados);
     }
+    setInmueble(inmueblesPosteados.inmuebles);
   }
 
   return (
@@ -106,8 +112,28 @@ export const Dashboard = () => {
                       </div>
                     </div>
 
-                    <div className="row my-5">
-                      tabla donde se veran todos los inmuebles publicados
+                    <div className="row my-5 w-75 m-auto">
+                      {/* tabla donde se veran todos los inmuebles publicados */}
+
+                      <div className="dashboard-title mt-2 mb-5">
+                        <h4 className='bg-belmeny text-light px-5 rounded-pill'>Inmuebles publicados por el agente</h4>
+                      </div>
+                      <div className="col">
+                        <table className="table table-responsive table-success table-bordered text-center">
+                          <thead>
+                            <th>#</th>
+                            <th>Titulo</th>
+                            <th>Inversion</th>
+                            <th>Tipo de Inmueble</th>
+                            <th>Precio</th>
+                            <th>Ubicacion</th>
+                            <th>Acciones</th>
+                          </thead>
+                          <tbody>
+                            {inmueble.map((item) => <ConsultaInmueble inmuebles={item} persona={persona} />)}
+                          </tbody>
+                        </table>
+                      </div>
                     </div>
 
                     <div className="row">

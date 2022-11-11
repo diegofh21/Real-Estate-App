@@ -39,6 +39,8 @@ Route::get('getInmueblesPublicados', [AgenteController::class, 'getInmueblesPubl
 // Para poder publicar los inmuebles
 Route::post('postInmueble', [AgenteController::class, 'PublicarInmueble']);
 Route::post('postImg', [AgenteController::class, 'postImg']); //Publicar imagen del inmueble
+Route::put('updateInmueble', [AgenteController::class, 'updateInmueble']); //Actualizar inmuebles
+Route::delete('deleteInmueble', [AgenteController::class, 'deleteInmueble']); //Actualizar inmuebles
 
 Route::group(['middleware' => 'api',], function () {
     Route::post('logout', [CustomUserController::class, 'logout']);
