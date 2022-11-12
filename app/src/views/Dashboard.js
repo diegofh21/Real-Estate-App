@@ -4,12 +4,14 @@ import { useNavigate } from 'react-router-dom';
 import Layout from '../components/Layout';
 import AuthUser from '../components/AuthUser';
 import { ConsultaInmueble } from './Inmuebles/ConsultaInmueble';
+import { DetalleInmuebleFav } from './Inmuebles/DetalleInmuebleFav';
 
 import userIcon from '../assets/img/userIconGreenResized.jpg';
 
 import { FaFacebook, FaTwitter, FaInstagram } from 'react-icons/fa';
 
-import { getPersona, getInmueblesPublicados } from '../api/request';
+import { getPersona, getInmueblesPublicados, CuentaFavorito, FavoritoPropiedades, getInmueblesFavoritos } from '../api/request';
+
 
 export const Dashboard = () => {
 
@@ -37,22 +39,47 @@ export const Dashboard = () => {
   //States de datos
   const [persona, setPersona] = useState({});
   const [conteoInmuebles, setConteoInmuebles] = useState('');
+  const [conteoFavoritos, setConteoFavoritos] = useState('');
+  const [propiedades, setPropiedades] = useState([]);
   const [inmueble, setInmueble] = useState([]);
+
+  //Falso es agente, true es cliente
+  const [agentOrClient, setAgentOrClient] = useState(false);
 
   const loadDatos = async () => {
     const res = await getPersona(user.id);
-    setPersona(res[0])
-    const inmueblesPosteados = await getInmueblesPublicados(res[0].id_agente)
-    // console.log(inmueblesPosteados)
+    if (res[0].id_cliente) {
+      setAgentOrClient(true)
+      setPersona(res[0])
 
-    //Obtener el numero de inmuebles publicados
-    if (inmueblesPosteados.countInmueble.length === 0) {
-      setConteoInmuebles(0);
+      const count = await CuentaFavorito(res[0].id_cliente)
+      const propiedadesFav = await FavoritoPropiedades(res[0].id_cliente)
+
+      setConteoFavoritos(count[0].nro_inmuebles)
+
+      var arrDetalleInmueblesFav = []
+      var data = {}
+
+      for (let i = 0; i < propiedadesFav.length; i++) {
+        const detalleInmueblesFav = await getInmueblesFavoritos(propiedadesFav[i].id_propiedad)
+        
+        arrDetalleInmueblesFav.push(detalleInmueblesFav.inmueblesFav[i])
+      }
+      console.log(arrDetalleInmueblesFav)
+      setPropiedades(arrDetalleInmueblesFav)
     }
     else {
-      setConteoInmuebles(inmueblesPosteados.countInmueble[0].InmueblesPublicados);
+      setPersona(res[0])
+      const inmueblesPosteados = await getInmueblesPublicados(res[0].id_agente)
+
+      if (inmueblesPosteados.countInmueble.length === 0) {
+        setConteoInmuebles(0);
+      }
+      else {
+        setConteoInmuebles(inmueblesPosteados.countInmueble[0].InmueblesPublicados);
+      }
+      setInmueble(inmueblesPosteados.inmuebles);
     }
-    setInmueble(inmueblesPosteados.inmuebles);
   }
 
   return (
@@ -72,13 +99,6 @@ export const Dashboard = () => {
                 </div>
               </> :
               <>
-
-                {/* Div para movil */}
-                <div className="text-center d-sm-none">
-                  {/* <img width={80} src={belmenyLogo} alt="Logo Belmeny Group" className='text-center mt-3 drop-shadow' /> */}
-                </div>
-
-                {/* Div para web */}
                 <div className='d-none d-md-block'>
                   <div className="container-fluid rounded">
                     <div className="row">
@@ -97,44 +117,80 @@ export const Dashboard = () => {
                     <div className="dashboard-title mt-2 mb-3">
                       <h4 className='bg-belmeny text-light px-5 rounded-pill'>Inicio</h4>
                     </div>
-                    <div className="row">
-                      <div className="col">
-                        <div className="bg-belmeny w-75 rounded m-auto text-light text-center py-3">
-                          <h5 className="">Inmuebles publicados</h5>
-                          <h6>{conteoInmuebles}</h6>
-                        </div>
-                      </div>
-                      <div className="col">
-                        <div className="bg-belmeny w-75 rounded m-auto text-light text-center py-3">
-                          <h5 className="">Clientes interesados en inmuebles publicados</h5>
-                          <h6>5</h6>
-                        </div>
-                      </div>
-                    </div>
+                    {
+                      (agentOrClient) ?
+                        <>
+                          {/* Cliente */}
+                          <div className="row">
+                            <div className="col">
+                              <div className="bg-belmeny w-75 rounded m-auto text-light text-center py-3">
+                                <h5 className="">Le has dado me interesa a **{conteoFavoritos}** inmueble(s)</h5>
+                              </div>
+                            </div>
+                          </div>
 
-                    <div className="row my-5 w-75 m-auto">
-                      {/* tabla donde se veran todos los inmuebles publicados */}
+                          <div className="row my-5 w-75 m-auto">
+                            <div className="dashboard-title mt-2 mb-5">
+                              <h4 className='bg-belmeny text-light px-5 rounded-pill'>Inmuebles favoritos</h4>
+                            </div>
+                            <div className="col">
+                              <table className="table table-responsive table-success table-bordered text-center fs-6">
+                                <thead>
+                                  <th>#</th>
+                                  <th>Titulo</th>
+                                  <th>Inversion</th>
+                                  <th>Tipo de Inmueble</th>
+                                  <th>Precio</th>
+                                  <th>Ubicacion</th>
+                                </thead>
+                                <tbody>
+                                  {propiedades.map((item) => <DetalleInmuebleFav inmuebles={item} />)}
+                                </tbody>
+                              </table>
+                            </div>
+                          </div>
+                        </> :
+                        <>
+                          {/* Agente */}
+                          <div className="row">
+                            <div className="col">
+                              <div className="bg-belmeny w-75 rounded m-auto text-light text-center py-3">
+                                <h5 className="">Inmuebles publicados</h5>
+                                <h6>{conteoInmuebles}</h6>
+                              </div>
+                            </div>
+                            <div className="col">
+                              <div className="bg-belmeny w-75 rounded m-auto text-light text-center py-3">
+                                <h5 className="">Clientes interesados en inmuebles publicados</h5>
+                                <h6>5</h6>
+                              </div>
+                            </div>
+                          </div>
 
-                      <div className="dashboard-title mt-2 mb-5">
-                        <h4 className='bg-belmeny text-light px-5 rounded-pill'>Inmuebles publicados por el agente</h4>
-                      </div>
-                      <div className="col">
-                        <table className="table table-responsive table-success table-bordered text-center">
-                          <thead>
-                            <th>#</th>
-                            <th>Titulo</th>
-                            <th>Inversion</th>
-                            <th>Tipo de Inmueble</th>
-                            <th>Precio</th>
-                            <th>Ubicacion</th>
-                            <th>Acciones</th>
-                          </thead>
-                          <tbody>
-                            {inmueble.map((item) => <ConsultaInmueble inmuebles={item} persona={persona} />)}
-                          </tbody>
-                        </table>
-                      </div>
-                    </div>
+                          <div className="row my-5 w-75 m-auto">
+                            <div className="dashboard-title mt-2 mb-5">
+                              <h4 className='bg-belmeny text-light px-5 rounded-pill'>Inmuebles publicados por el agente</h4>
+                            </div>
+                            <div className="col">
+                              <table className="table table-responsive table-success table-bordered text-center">
+                                <thead>
+                                  <th>#</th>
+                                  <th>Titulo</th>
+                                  <th>Inversion</th>
+                                  <th>Tipo de Inmueble</th>
+                                  <th>Precio</th>
+                                  <th>Ubicacion</th>
+                                  <th>Acciones</th>
+                                </thead>
+                                <tbody>
+                                  {inmueble.map((item) => <ConsultaInmueble inmuebles={item} persona={persona} />)}
+                                </tbody>
+                              </table>
+                            </div>
+                          </div>
+                        </>
+                    }
+
 
                     <div className="row">
                       <div className="col-sm-12">
@@ -143,10 +199,10 @@ export const Dashboard = () => {
                           <a href="https://www.facebook.com/diegofh21/" target={'_blank'} className='fb-btn belmeny-text me-3'>
                             <span className='fs-1'><FaFacebook /></span>
                           </a>
-                          <a href="https://twitter.com/vert_productos?lang=es" target={'_blank'} className='tw-btn belmeny-text me-3'>
+                          <a href="https://twitter.com/ocandomassiel?lang=es" target={'_blank'} className='tw-btn belmeny-text me-3'>
                             <span className='fs-1'><FaTwitter /></span>
                           </a>
-                          <a href="https://www.instagram.com/vert.productos/?hl=es" target={'_blank'} className='ig-btn belmeny-text me-3'>
+                          <a href="https://www.instagram.com/massielocando/?hl=es" target={'_blank'} className='ig-btn belmeny-text me-3'>
                             <span className='fs-1'><FaInstagram /></span>
                           </a>
                         </div>

@@ -11,7 +11,7 @@ import realEstateLogo from '../assets/img/realEstate-logo.png';
 
 export const SideNavbar = ({ collapsed, toggled, handleToggleSidebar }) => {
   const navigate = useNavigate();
-  const { token, logout } = AuthUser();
+  const { token, logout, user } = AuthUser();
   const logoutUser = () => {
     if (token != undefined) {
       logout();
@@ -46,10 +46,17 @@ export const SideNavbar = ({ collapsed, toggled, handleToggleSidebar }) => {
             icon={<FaTachometerAlt />}>
             <Link to="/dashboard">Inicio</Link>
           </MenuItem>
-          <MenuItem
-            icon={<FaCity />}>
-            <Link to="/publicar-inmueble">Inmuebles</Link>
-          </MenuItem>
+          {
+            (user.tipo === 'agente') ?
+              <>
+                <MenuItem
+                  icon={<FaCity />}>
+                  <Link to="/publicar-inmueble">Inmuebles</Link>
+                </MenuItem>
+              </> :
+              <>
+              </>
+          }
           <MenuItem
             icon={<FaUserAlt className='' />}>
             <Link to="/perfil">

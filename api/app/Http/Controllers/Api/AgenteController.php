@@ -9,6 +9,10 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use App\Models\Propiedades;
 
+use App\Http\Resources\InmueblesCollection;
+use App\Http\Resources\InmueblesResource;
+use App\Filters\V1\InmueblesFilter;
+
 class AgenteController extends BaseController
 {
     public function postImg(Request $request)
@@ -82,26 +86,15 @@ class AgenteController extends BaseController
                 ]);
 
             return response()->json(["status" => 200, "message" => "Propiedad registrada exitosamente"]);
-
-            // $inmueble->titulo = $request->titulo;
-            // $inmueble->ubicacion = $request->ubicacion;
-            // $inmueble->descripcion = $request->descripcion;
-            // $inmueble->precio = $request->precio;
-            // $inmueble->tipo = $request->tipo;
-            // $inmueble->bathroom = $request->bathroom;
-            // $inmueble->habitaciones = $request->habitaciones;
-            // $inmueble->estacionamientos = $request->estacionamientos;
-            // $inmueble->estado = $request->estado;
-            // $inmueble->id_agente = $request->id_agente;
-
-            // $inmueble->save();
-
         }
     }
 
     public function getInmueblesPublicados(Request $request)
     {
         $inmuebles = Propiedades::where('id_agente', $request->id_agente)
+            ->get();
+
+        $inmueblesFav = Propiedades::where('id_propiedad', $request->id_propiedad)
             ->get();
 
         $countInmuebles = DB::table('propiedad')
@@ -112,6 +105,7 @@ class AgenteController extends BaseController
         return response()->json([
             'inmuebles' => $inmuebles,
             'countInmueble' => $countInmuebles,
+            'inmueblesFav' => $inmueblesFav
         ]);
     }
 
@@ -151,9 +145,51 @@ class AgenteController extends BaseController
         }
     }
 
-    public function deleteInmueble(Request $request) {
+    public function deleteInmueble(Request $request)
+    {
         $deleted = Propiedades::where('id_propiedad', $request->id_propiedad)->delete();
 
         return response()->json(["status" => 200, "message" => "Propiedad eliminada exitosamente"]);
+    }
+
+    public function getAllInmuebles(Request $request)
+    {
+        $filter = new InmueblesFilter();
+        $filterItems = $filter->transform($request);
+
+        $inmuebles = Propiedades::where($filterItems)->orderByDesc('created_at');
+
+        return new InmueblesCollection($inmuebles->paginate(50)->appends($request->query()));
+    }
+
+    public function busquedaInmuebles(Request $request)
+    {
+        $inmuebles = '';
+
+        $validator = Validator::make($request->all(), [
+            // Required for login
+            'ubicacion' => 'required',
+            'bathroom' => 'required',
+            'habitaciones' => 'required',
+            'estacionamientos' => 'required',
+            'tipo' => 'required',
+            'estado' => 'required',
+        ]);
+
+        if ($validator->fails()) {
+            return $this->sendError('Validation Error.', $validator->errors());
+        }
+
+        $inmuebles = Propiedades::select('*')
+            ->where('ubicacion', 'LIKE', '%' . $request->location . '%')
+            ->orWhere('bathroom', '>=', $request->bathroom)
+            ->orWhere('habitaciones', '>=', $request->habitaciones)
+            ->orWhere('estacionamientos', '>=', $request->estacionamientos)
+            ->orWhere('tipo', '>=', $request->tipo)
+            ->orWhere('estado', '>=', $request->estado)
+            ->take(1)
+            ->get();
+
+        return response()->json($inmuebles);
     }
 }

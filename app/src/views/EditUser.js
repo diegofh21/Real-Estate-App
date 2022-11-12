@@ -9,7 +9,7 @@ import { Footer } from '../components/Footer';
 import axios from "axios";
 import AuthUser from '../components/AuthUser';
 
-import { getUsuario, registrarPersona } from "../api/request";
+import { getPersona, EditPersona } from "../api/request";
 
 import { useAppContext } from "../lib/contextLib";
 
@@ -35,9 +35,8 @@ export const EditUser = () => {
   const [direccion, setDireccion] = useState('');
   const [correo, setCorreo] = useState('');
   const [genero, setGenero] = useState('NA');
-  const [userType, setUserType] = useState('NA')
 
-  // const [user, setUser] = useState([]);
+  const [persona, setPersona] = useState([]);
 
   const [show, setShow] = useState(false);
   const [redirect, setRedirect] = useState(false);
@@ -55,8 +54,9 @@ export const EditUser = () => {
     }
   }
 
-  const handleSelect = (e) => {
+  const handleSelectGender = (e) => {
     e.preventDefault();
+    console.log(e.target.value)
     switch (e.target.value) {
       case 'Masculino':
         setGenero('Masculino')
@@ -64,19 +64,11 @@ export const EditUser = () => {
       case 'Femenino':
         setGenero('Femenino')
         break;
-      case 'Agente':
-        setUserType('Agente')
-        break;
-      case 'Cliente':
-        setUserType('Cliente')
-        break;
       case 'NA':
         setGenero('NA')
-        setUserType('NA')
         break;
       default:
         setGenero('NA')
-        setUserType('NA')
         break;
     }
   }
@@ -86,64 +78,23 @@ export const EditUser = () => {
     loader()
     e.preventDefault();
 
-    if (genero && userType === 'NA') {
-      alert('DEBE ESCOGER SU GENERO Y TIPO DE USUARIO')
+    if (genero === 'NA') {
+      alert('DEBE ESCOGER UN GENERO')
     }
     else {
-      if (userType === 'Agente') {
-        http.post('/register', { username: Usuario, password: password, email: correo }).then((res) => {
-          // Registra al usuario
-
-          http.get(`/getUser?username=${Usuario}`).then((res) => {
-            // Obtiene al usuario y su id
-            
-            http.post(`/registrarPersona?fullname=${nombre}&dni=${dni}&genero=${genero}&phone=${tlf}&address=${direccion}&id_user=${res.data[0].id}&tipo=${userType}`).then((res) => {
-              // Registra a la persona en la tabla correspondiente y lo redirije al login
-              navigate('/login')
-            }).catch((error) => {
-              console.log(error)
-              setLoadLogin(false);
-              setShow(true)
-            })
-          }).catch((error) => {
-            console.log(error)
-            setLoadLogin(false);
-            setShow(true)
-          })
-        }).catch((error) => {
-          console.log(error)
-          setLoadLogin(false);
-          setShow(true)
-        })
+      const res = await EditPersona(user.id, nombre, dni, direccion, tlf, genero)
+      if (res.status === 200) {
+        alert(res.message)
+        console.log(res)
+        navigate('/dashboard')
       }
-      else if (userType === 'Cliente') {
-        http.post('/register', { username: Usuario, password: password, email: correo }).then((res) => {
-          http.get(`/getUser?username=${Usuario}`).then((res) => {
-            console.log("respuesta=", res.data[0].id)
-            http.post(`/registrarPersona?fullname=${nombre}&dni=${dni}&genero=${genero}&phone=${tlf}&address=${direccion}&id_user=${res.data[0].id}&tipo=${userType}`).then((res) => {
-              console.log(res)
-            }).catch((error) => {
-              console.log(error)
-              setLoadLogin(false);
-              setShow(true)
-            })
-          }).catch((error) => {
-            console.log(error)
-            setLoadLogin(false);
-            setShow(true)
-          })
-        }).catch((error) => {
-          console.log(error)
-          setLoadLogin(false);
-          setShow(true)
-        })
-      }
-
     }
+    setLoadLogin(false);
   }
 
   useEffect(() => {
     onLoad()
+    loadPerfil()
   }, []);
 
   const onLoad = async () => {
@@ -153,6 +104,11 @@ export const EditUser = () => {
         setLoading(false);
       }, 300);
     }
+  }
+
+  const loadPerfil = async () => {
+    const res = await getPersona(user.id)
+    setPersona(res[0])
   }
 
   return (
@@ -218,18 +174,9 @@ export const EditUser = () => {
                             id="username"
                             className="form-control"
                             value={Usuario}
-                            onChange={(e) => setUsuario(e.target.value)} />
-                        </div>
-                      </div>
-                      <div className="col">
-                        <div className="mb-3">
-                          <label htmlFor="password">Contraseña</label>
-                          <input type="password"
-                            name="password"
-                            id="password"
-                            className="form-control"
-                            value={password}
-                            onChange={(e) => { setPassword(e.target.value) }} />
+                            onChange={(e) => setUsuario(e.target.value)}
+                            placeholder={user.username}
+                            disabled />
                         </div>
                       </div>
                       <div className="mb-3">
@@ -239,7 +186,9 @@ export const EditUser = () => {
                           id="fullname"
                           className="form-control"
                           value={nombre}
-                          onChange={(e) => { setNombre(e.target.value) }} />
+                          onChange={(e) => { setNombre(e.target.value) }}
+                          placeholder={persona.fullname} 
+                          required/>
                       </div>
                       <div className="mb-3">
                         <label htmlFor="dni">Cédula de Identidad</label>
@@ -248,7 +197,9 @@ export const EditUser = () => {
                           id="dni"
                           className="form-control"
                           value={dni}
-                          onChange={(e) => { setDni(e.target.value) }} />
+                          onChange={(e) => { setDni(e.target.value) }}
+                          placeholder={persona.dni} 
+                          required/>
                       </div>
                       <div className="mb-3">
                         <label htmlFor="direccion">Dirección</label>
@@ -257,7 +208,9 @@ export const EditUser = () => {
                           id="direccion"
                           className="form-control"
                           value={direccion}
-                          onChange={(e) => { setDireccion(e.target.value) }} />
+                          onChange={(e) => { setDireccion(e.target.value) }}
+                          placeholder={persona.address} 
+                          required/>
                       </div>
                       <div className="col">
                         <div className="mb-3">
@@ -267,13 +220,15 @@ export const EditUser = () => {
                             id="tlf"
                             className="form-control"
                             value={tlf}
-                            onChange={(e) => { setTlf(e.target.value) }} />
+                            onChange={(e) => { setTlf(e.target.value) }}
+                            placeholder={persona.phone} 
+                            required/>
                         </div>
                       </div>
                       <div className="col">
                         <div className="mb-3">
                           <label htmlFor="genero">Género</label>
-                          <select name="genero" className='form-select' onChange={handleSelect}>
+                          <select name="genero" className='form-select' onChange={handleSelectGender} required>
                             <option value="NA">-----------</option>
                             <option value="Masculino">Masculino</option>
                             <option value="Femenino">Femenino</option>
@@ -287,17 +242,9 @@ export const EditUser = () => {
                           id="correo"
                           className="form-control"
                           value={correo}
-                          onChange={(e) => { setCorreo(e.target.value) }} />
-                      </div>
-                      <div className="col">
-                        <div className="mb-3">
-                          <label htmlFor="tipo">Tipo de usuario</label>
-                          <select name="tipo" className='form-select' onChange={handleSelect}>
-                            <option value="NA">-----------</option>
-                            <option value="Agente">Agente</option>
-                            <option value="Cliente">Cliente</option>
-                          </select>
-                        </div>
+                          onChange={(e) => { setCorreo(e.target.value) }}
+                          placeholder={user.email}
+                          disabled />
                       </div>
                     </div>
                     <button className='btn rounded-pill bg-belmeny btn-hover text-light w-100 mt-3' type='submit'>Registrarse <FontAwesomeIcon icon={faArrowAltCircleRight} /></button>

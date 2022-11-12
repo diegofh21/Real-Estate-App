@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\CustomUserController;
 use App\Http\Controllers\API\RegisterController;
 use App\Http\Controllers\Api\PersonaController;
+use App\Http\Controllers\Api\ClienteController;
 
 /*
 |--------------------------------------------------------------------------
@@ -32,9 +33,17 @@ Route::post('registrarPersona', [RegisterController::class,'registrarPersona']);
 
 //Para obtener los datos de la persona
 Route::get('getPersona', [PersonaController::class, 'getPersona']);
+Route::put('editPersona', [PersonaController::class, 'editPersona']); // editar persona
+
+//Ruta para hacer el favorito del inmueble
+Route::post('makeFavoritos', [ClienteController::class, 'makeFavoritos']);
+Route::get('cuentaFavoritos', [ClienteController::class, 'cuentaFavoritos']);
+Route::get('propiedadesFavoritos', [ClienteController::class, 'propiedadesFavoritos']);
 
 //Obtener los inmuebles publicados para el dashboard del agente
+Route::get('getAllInmuebles', [AgenteController::class, 'getAllInmuebles']); //Obtener todos los inmuebles publicados
 Route::get('getInmueblesPublicados', [AgenteController::class, 'getInmueblesPublicados']);
+Route::get('busquedaInmuebles', [AgenteController::class, 'busquedaInmuebles']);
 
 // Para poder publicar los inmuebles
 Route::post('postInmueble', [AgenteController::class, 'PublicarInmueble']);

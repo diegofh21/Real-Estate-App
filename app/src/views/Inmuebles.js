@@ -1,35 +1,52 @@
 import React, { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 
+import AuthUser from '../components/AuthUser'
 import { Header } from '../components/Header'
 import { Footer } from '../components/Footer'
-
-import { Splide, SplideSlide, SplideTrack } from '@splidejs/react-splide';
-
-import { BsArrowRight, BsArrowLeft, BsSearch } from "react-icons/bs";
-import { GrMapLocation } from "react-icons/gr";
+import { InmueblesPublicados } from './Inmuebles/InmueblesPublicados'
 
 import Dropdown from 'react-bootstrap/Dropdown';
 
-import inmueble1 from '../assets/img/inmueble1.jpg';
-// import inmue1ble from '../assets/img/inmueble1.jpg'
-import codigoQR from '../assets/img/codigoQR.png';
-
+import { getAllInmuebles, RequestPage, getPersona } from '../api/request';
 
 export const Inmuebles = () => {
+
+  // State del usuario
+  const { user, getToken } = AuthUser();
 
   const [loading, setLoading] = useState(true);
 
   // States para datos
   const [location, setLocation] = useState('');
-  const [inmueble, setInmueble] = useState('NA');
+  const [inmueble, setInmueble] = useState('NA'); //busqueda
   const [bath, setBath] = useState('');
   const [hab, setHab] = useState('');
   const [estacionamiento, setEstacionamiento] = useState('');
 
+  // States de paginas
+  const [page, setPage] = useState('');
+  const [totalPages, setTotalPages] = useState('');
+  const [nextPage, setNextPage] = useState('');
+  const [prevPage, setPrevPage] = useState('');
+  const [firstPage, setFirstPage] = useState('');
+  const [lastPage, setLastPage] = useState('');
+
+  const [inmuebles, setInmuebles] = useState([]) //impresion de inmuebles
+  const [cliente, setCliente] = useState(false)
+
   useEffect(() => {
     onLoad()
+    agentOrClient()
+    loadInmuebles()
   }, []);
+
+  const agentOrClient = async () => {
+    const res = await getPersona(user.id)
+    if(!res[0].id_agente) {
+      setCliente(true)
+    }
+  }
 
   const onLoad = async () => {
     // Loader en false
@@ -54,6 +71,79 @@ export const Inmuebles = () => {
       // BUSCA EL INMUEBLE SEGUN LAS CARACTERISTICAS SELECCIONADAS
       console.log(location, bath, hab, estacionamiento, inmueble)
     }
+  }
+
+  const loadInmuebles = async () => {
+    const res = await getAllInmuebles()
+    // console.log(res.data)
+
+    var arrInmueble = []
+    var data = {}
+
+    for (let i = 0; i < res.data.length; i++) {
+      data = {
+        id_propiedad: res.data[i].id_propiedad,
+        titulo: res.data[i].titulo,
+        ubicacion: res.data[i].ubicacion,
+        descripcion: res.data[i].descripcion,
+        precio: res.data[i].precio,
+        tipo: res.data[i].tipo,
+        bathroom: res.data[i].bathroom,
+        habitaciones: res.data[i].habitaciones,
+        estacionamientos: res.data[i].estacionamientos,
+        estado: res.data[i].estado,
+        photo: res.data[i].photo,
+        id_agente: res.data[i].id_agente
+      }
+      arrInmueble.push(data)
+    }
+
+    setPage(res.meta.current_page)
+    setTotalPages(res.meta.last_page)
+    setNextPage(res.links.next)
+    setPrevPage(res.links.prev)
+    setFirstPage(res.links.first)
+    setLastPage(res.links.last)
+
+    setInmuebles(arrInmueble)
+    setLoading(false)
+  }
+
+  const loadPage = async (e, pageData) => {
+    setLoading(true)
+
+    const inmuebleData = await RequestPage(pageData);
+
+    var arrInmueble = []
+    var data = {}
+
+    for (let i = 0; i < inmuebleData.data.length; i++) {
+      data = {
+        id_propiedad: inmuebleData.data[i].id_propiedad,
+        titulo: inmuebleData.data[i].titulo,
+        ubicacion: inmuebleData.data[i].ubicacion,
+        descripcion: inmuebleData.data[i].descripcion,
+        precio: inmuebleData.data[i].precio,
+        tipo: inmuebleData.data[i].tipo,
+        bathroom: inmuebleData.data[i].bathroom,
+        habitaciones: inmuebleData.data[i].habitaciones,
+        estacionamientos: inmuebleData.data[i].estacionamientos,
+        estado: inmuebleData.data[i].estado,
+        photo: inmuebleData.data[i].photo,
+        id_agente: inmuebleData.data[i].id_agente
+      }
+      arrInmueble.push(data)
+    }
+
+    setPage(inmuebleData.meta.current_page)
+    setTotalPages(inmuebleData.meta.last_page)
+    setNextPage(inmuebleData.links.next)
+    setPrevPage(inmuebleData.links.prev)
+    setFirstPage(inmuebleData.links.first)
+    setLastPage(inmuebleData.links.last)
+
+    setInmuebles(arrInmueble)
+    setLoading(false)
   }
 
   return (
@@ -87,121 +177,7 @@ export const Inmuebles = () => {
                   </div>
 
                   <div className="row text-center mt-5">
-                    <div className="col">
-                      <div className="card w-75 m-auto">
-                        <Link className='text-decoration-none'>
-                          <img src={inmueble1} className="card-img-top" alt="..." />
-                          <div className="card-body text-dark">
-                            <h5 className="card-title">Large 4-room apartment with a beautiful terrace</h5>
-                            <p className="card-text text-start">
-                              <span className="belmeny-text fw-bold">$320 000</span> <br />
-                              <span>Maracaibo, VE</span>
-                            </p>
-                          </div>
-                        </Link>
-                      </div>
-                    </div>
-                    <div className="col">
-                      <div className="card w-75 m-auto">
-                        <Link className='text-decoration-none'>
-                          <img src={inmueble1} className="card-img-top" alt="..." />
-                          <div className="card-body text-dark">
-                            <h5 className="card-title">Large 4-room apartment with a beautiful terrace</h5>
-                            <p className="card-text text-start">
-                              <span className="belmeny-text fw-bold">$320 000</span> <br />
-                              <span>Maracaibo, VE</span>
-                            </p>
-                          </div>
-                        </Link>
-                      </div>
-                    </div>
-                    <div className="col">
-                      <div className="card w-75 m-auto">
-                        <Link className='text-decoration-none'>
-                          <img src={inmueble1} className="card-img-top" alt="..." />
-                          <div className="card-body text-dark">
-                            <h5 className="card-title">Large 4-room apartment with a beautiful terrace</h5>
-                            <p className="card-text text-start">
-                              <span className="belmeny-text fw-bold">$320 000</span> <br />
-                              <span>Maracaibo, VE</span>
-                            </p>
-                          </div>
-                        </Link>
-                      </div>
-                    </div>
-                    <div className="col">
-                      <div className="card w-75 m-auto">
-                        <Link className='text-decoration-none'>
-                          <img src={inmueble1} className="card-img-top" alt="..." />
-                          <div className="card-body text-dark">
-                            <h5 className="card-title">Large 4-room apartment with a beautiful terrace</h5>
-                            <p className="card-text text-start">
-                              <span className="belmeny-text fw-bold">$320 000</span> <br />
-                              <span>Maracaibo, VE</span>
-                            </p>
-                          </div>
-                        </Link>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="row text-center mt-5">
-                  <div className="col">
-                      <div className="card w-75 m-auto">
-                        <Link className='text-decoration-none'>
-                          <img src={inmueble1} className="card-img-top" alt="..." />
-                          <div className="card-body text-dark">
-                            <h5 className="card-title">Large 4-room apartment with a beautiful terrace</h5>
-                            <p className="card-text text-start">
-                              <span className="belmeny-text fw-bold">$320 000</span> <br />
-                              <span>Maracaibo, VE</span>
-                            </p>
-                          </div>
-                        </Link>
-                      </div>
-                    </div>
-                    <div className="col">
-                      <div className="card w-75 m-auto">
-                        <Link className='text-decoration-none'>
-                          <img src={inmueble1} className="card-img-top" alt="..." />
-                          <div className="card-body text-dark">
-                            <h5 className="card-title">Large 4-room apartment with a beautiful terrace</h5>
-                            <p className="card-text text-start">
-                              <span className="belmeny-text fw-bold">$320 000</span> <br />
-                              <span>Maracaibo, VE</span>
-                            </p>
-                          </div>
-                        </Link>
-                      </div>
-                    </div>
-                    <div className="col">
-                      <div className="card w-75 m-auto">
-                        <Link className='text-decoration-none'>
-                          <img src={inmueble1} className="card-img-top" alt="..." />
-                          <div className="card-body text-dark">
-                            <h5 className="card-title">Large 4-room apartment with a beautiful terrace</h5>
-                            <p className="card-text text-start">
-                              <span className="belmeny-text fw-bold">$320 000</span> <br />
-                              <span>Maracaibo, VE</span>
-                            </p>
-                          </div>
-                        </Link>
-                      </div>
-                    </div>
-                    <div className="col">
-                      <div className="card w-75 m-auto">
-                        <Link className='text-decoration-none'>
-                          <img src={inmueble1} className="card-img-top" alt="..." />
-                          <div className="card-body text-dark">
-                            <h5 className="card-title">Large 4-room apartment with a beautiful terrace</h5>
-                            <p className="card-text text-start">
-                              <span className="belmeny-text fw-bold">$320 000</span> <br />
-                              <span>Maracaibo, VE</span>
-                            </p>
-                          </div>
-                        </Link>
-                      </div>
-                    </div>
+                    {inmuebles.map((item) => <InmueblesPublicados item={item} cliente={cliente}/>)}
                   </div>
                 </div>
               </main>

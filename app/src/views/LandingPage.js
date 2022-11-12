@@ -2,29 +2,39 @@ import React, { useEffect, useState } from 'react'
 
 import { Header } from '../components/Header'
 import { Footer } from '../components/Footer'
+import AuthUser from '../components/AuthUser';
 
-import { Splide, SplideSlide, SplideTrack } from '@splidejs/react-splide';
+import { Collapse, Modal, Button, Col, Row } from 'react-bootstrap';
 
-import { BsArrowRight, BsArrowLeft, BsSearch } from "react-icons/bs";
+import { BsArrowRight, BsArrowLeft, BsSearch, BsArrowRightCircleFill } from "react-icons/bs";
 import { GrMapLocation } from "react-icons/gr";
+import { RiCloseCircleFill } from "react-icons/ri";
 
 import Dropdown from 'react-bootstrap/Dropdown';
 import { Nav } from 'react-bootstrap';
 
-import { tip_titulo, tip_1, tip_2, tip_3, tip_4, tip_5, tip_6, tip_7, tip_8, tip_9, tip_10, tip_11, tip_12, tip_13, tip_final } from '../assets/img'
-import codigoQR from '../assets/img/codigoQR.png';
-
+import { buscarInmueble, getPersona } from '../api/request';
 
 export const LandingPage = () => {
+
+  const {user, http} = AuthUser();
 
   const [loading, setLoading] = useState(true);
 
   // States para datos
-  const [location, setLocation] = useState('');
-  const [inmueble, setInmueble] = useState('NA');
-  const [bath, setBath] = useState('');
-  const [hab, setHab] = useState('');
-  const [estacionamiento, setEstacionamiento] = useState('');
+  const [ubicacion, setUbicacion] = useState('');
+  const [tipo, setTipo] = useState('NA');
+  const [bathroom, setBathroom] = useState('');
+  const [habitaciones, setHabitaciones] = useState('');
+  const [estacionamientos, setEstacionamientos] = useState('');
+  const [estado, setEstado] = useState('Venta');
+
+  const [inmueblesEncontrados, setInmueblesEncontrados] = useState([])
+  const [agente, setAgente] = useState([])
+
+  // States del modal
+  const [fullscreen, setFullscreen] = useState(true);
+  const [showModal, setShowModal] = useState(false);
 
   const [show, setShow] = useState(true);
 
@@ -43,29 +53,34 @@ export const LandingPage = () => {
 
   const handleSelect = (e) => {
     e.preventDefault();
-    setInmueble(e.target.value)
+    setTipo(e.target.value)
   }
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (inmueble === 'NA') {
+    if (tipo === 'NA') {
       alert('SELECCIONE UN TIPO DE INMUEBLE')
     }
     else {
       // BUSCA EL INMUEBLE SEGUN LAS CARACTERISTICAS SELECCIONADAS
-      console.log(location, bath, hab, estacionamiento, inmueble)
+      setShowModal(true)
+      const res = await buscarInmueble(ubicacion, bathroom, habitaciones, estacionamientos, tipo, estado)
+      const resAgente = await getPersona(res[0].id_agente)
+      setAgente(resAgente[0])
+      setInmueblesEncontrados(res[0])
+      // console.log(location, bath, hab, estacionamiento, inmueble)
     }
   }
 
   const showSearch = (e, data) => {
     e.preventDefault();
-    if(data === 'Rent')
-    {
+    if (data === 'Rent') {
       setShow(false)
+      setEstado('Alquilar')
     }
-    else
-    {
+    else {
       setShow(true)
+      setEstado('Venta')
     }
   }
 
@@ -123,13 +138,13 @@ export const LandingPage = () => {
                                         name="location"
                                         className='form-control'
                                         placeholder='Ubicación'
-                                        value={location}
-                                        onChange={(e) => setLocation(e.target.value)} />
+                                        value={ubicacion}
+                                        onChange={(e) => setUbicacion(e.target.value)} required />
                                     </div>
                                   </div>
                                 </div>
                                 <div className="col">
-                                  <select name="inmueble" id="" className='form-select fw-bold' onChange={handleSelect}>
+                                  <select name="inmueble" id="" className='form-select fw-bold' onChange={handleSelect} required>
                                     <option value="NA">Tipo de Inmueble</option>
                                     <option value="Casa">Casa</option>
                                     <option value="Apartamento">Apartamento</option>
@@ -148,8 +163,8 @@ export const LandingPage = () => {
                                           <input type="text"
                                             name="bath"
                                             className='form-control'
-                                            value={bath}
-                                            onChange={(e) => setBath(e.target.value)} />
+                                            value={bathroom}
+                                            onChange={(e) => setBathroom(e.target.value)}required  />
                                         </div>
                                       </div>
                                       <div className="dropdown-divider my-3"></div>
@@ -159,8 +174,8 @@ export const LandingPage = () => {
                                           <input type="text"
                                             name="habitaciones"
                                             className='form-control'
-                                            value={hab}
-                                            onChange={(e) => setHab(e.target.value)} />
+                                            value={habitaciones}
+                                            onChange={(e) => setHabitaciones(e.target.value)} required />
                                         </div>
                                       </div>
                                       <div className="dropdown-divider my-3"></div>
@@ -170,8 +185,8 @@ export const LandingPage = () => {
                                           <input type="text"
                                             name="estacionamiento"
                                             className='form-control'
-                                            value={estacionamiento}
-                                            onChange={(e) => setEstacionamiento(e.target.value)} />
+                                            value={estacionamientos}
+                                            onChange={(e) => setEstacionamientos(e.target.value)} required />
                                         </div>
                                       </div>
                                     </Dropdown.Menu>
@@ -193,16 +208,16 @@ export const LandingPage = () => {
                                     </div>
                                     <div className="col">
                                       <input type="text"
-                                        name="location"
+                                        name="ubicacion"
                                         className='form-control'
                                         placeholder='Ubicación'
-                                        value={location}
-                                        onChange={(e) => setLocation(e.target.value)} />
+                                        value={ubicacion}
+                                        onChange={(e) => setUbicacion(e.target.value)} required />
                                     </div>
                                   </div>
                                 </div>
                                 <div className="col">
-                                  <select name="inmueble" id="" className='form-select fw-bold' onChange={handleSelect}>
+                                  <select name="inmueble" id="" className='form-select fw-bold' onChange={handleSelect} required>
                                     <option value="NA">Tipo de Inmueble</option>
                                     <option value="Casa">Casa</option>
                                     <option value="Apartamento">Apartamento</option>
@@ -221,8 +236,8 @@ export const LandingPage = () => {
                                           <input type="text"
                                             name="bath"
                                             className='form-control'
-                                            value={bath}
-                                            onChange={(e) => setBath(e.target.value)} />
+                                            value={bathroom}
+                                            onChange={(e) => setBathroom(e.target.value)} required />
                                         </div>
                                       </div>
                                       <div className="dropdown-divider my-3"></div>
@@ -232,8 +247,8 @@ export const LandingPage = () => {
                                           <input type="text"
                                             name="habitaciones"
                                             className='form-control'
-                                            value={hab}
-                                            onChange={(e) => setHab(e.target.value)} />
+                                            value={habitaciones}
+                                            onChange={(e) => setHabitaciones(e.target.value)} required />
                                         </div>
                                       </div>
                                       <div className="dropdown-divider my-3"></div>
@@ -243,8 +258,8 @@ export const LandingPage = () => {
                                           <input type="text"
                                             name="estacionamiento"
                                             className='form-control'
-                                            value={estacionamiento}
-                                            onChange={(e) => setEstacionamiento(e.target.value)} />
+                                            value={estacionamientos}
+                                            onChange={(e) => setEstacionamientos(e.target.value)} required />
                                         </div>
                                       </div>
                                     </Dropdown.Menu>
@@ -257,9 +272,7 @@ export const LandingPage = () => {
                             </div>
                           </>
                       }
-
                     </div>
-
                   </div>
                 </form>
               </main>
@@ -267,6 +280,69 @@ export const LandingPage = () => {
             <Footer></Footer>
           </>
       }
+
+      <Modal show={showModal} fullscreen={fullscreen} onHide={() => setShowModal(false)}>
+        <Modal.Header className='bg-belmeny text-light'>
+
+          <Modal.Title className='fst-italic'>Resultados de Busqueda</Modal.Title>
+          <Modal.Title>
+            <RiCloseCircleFill className='text-danger fs-1 modal-close bg-light rounded-circle' onClick={() => setShowModal(false)} />
+          </Modal.Title>
+
+        </Modal.Header>
+        <div className="division w-100 my-4"></div>
+        <Modal.Body>
+          <div className="container-fluid">
+            <div className="bg-belmeny rounded-pill m-auto w-50">
+                <h3 className="text-center text-light">Inmuebles encontrados a base de sus preferencias</h3>
+            </div>
+
+            <div className="container my-3">
+              <div className="text-center">
+                <img src={inmueblesEncontrados.photo} alt="Foto del Inmueble" className='w-50 rounded' />
+              </div>
+
+              <div className="row m-auto">
+                <h3 className="text-center belmeny-text my-2">{inmueblesEncontrados.titulo}</h3>
+                <div className="col"></div>
+                <div className="col-sm-5">
+                  <h5>Estado: {
+                    (inmueblesEncontrados.estado === 'Venta') ?
+                      <>
+                        <span className="text-success fw-bold">{inmueblesEncontrados.estado}</span>
+                      </> :
+                      <>
+                        <span className="text-danger fw-bold">{inmueblesEncontrados.estado}</span>
+                      </>
+                  }</h5>
+                  <h5>Descripcion: {inmueblesEncontrados.descripcion}</h5>
+                  <h5>Ubicacion: {inmueblesEncontrados.ubicacion}</h5>
+                  <h5>Precio: <span className='text-success fw-bold'>${inmueblesEncontrados.precio}</span></h5>
+                </div>
+                <div className="col-sm-5">
+                  <h5>Baños: {inmueblesEncontrados.bathroom}</h5>
+                  <h5>Habitaciones: {inmueblesEncontrados.habitaciones}</h5>
+                  <h5>Estacionamientos: {inmueblesEncontrados.estacionamientos}</h5>
+                  <h5>Agente que publico el inmueble: {agente.fullname}</h5>
+                </div>
+                <div className="col"></div>
+              </div>
+
+            </div>
+            <div className="division bg-belmeny mb-4"></div>
+             {
+              (user.tipo === 'cliente') ?
+                <>
+                  <h2 className="text-center">¿Estas interesado en este inmueble? Contacta al agente de este inmueble a traves del <i>{agente.phone}</i></h2>
+                </> :
+                <>
+                   {/* <h2 className="text-center">¿Estas interesado en este inmueble? Contacta al agente de este inmueble a traves del <i>{agente.phone}</i></h2>  */}
+
+                 </> 
+             } 
+          </div>
+        </Modal.Body>
+      </Modal>
 
     </>
   )

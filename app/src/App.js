@@ -19,8 +19,8 @@ import { Dashboard } from './views/Dashboard';
 import { PageNotFound } from './views/404/PageNotFound';
 import { AboutUs } from './views/AboutUs';
 import { EditUser } from './views/EditUser';
-import { Formulario } from './views/Formulario';
 import { PublicarInmueble } from './views/Inmuebles/PublicarInmueble';
+import { DetalleInmueble } from './views/Inmuebles/DetalleInmuebleFav';
 
 // Estilos
 import './index.css';
@@ -98,7 +98,7 @@ function App() {
               <Route path="/publicar-inmueble" element={<PublicarInmueble />}></Route>
 
               {/* Página para editar Datos del usuario y Agente*/}
-              <Route path="/edituser" element={<EditUser />}></Route>
+              <Route path="/perfil" element={<EditUser />}></Route>
 
               {/* En caso de no encontrar ningúna ruta de las especificadas*/}
               <Route path="/*" element={

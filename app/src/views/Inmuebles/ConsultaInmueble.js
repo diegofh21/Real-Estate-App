@@ -12,7 +12,6 @@ import { getPersona, updateInmueble, deleteInmueble } from '../../api/request';
 export const ConsultaInmueble = (props) => {
 
   var Inmueble = props.inmuebles;
-  var Persona = props.persona;
 
   // State del usuario
   const { user, http } = AuthUser();
